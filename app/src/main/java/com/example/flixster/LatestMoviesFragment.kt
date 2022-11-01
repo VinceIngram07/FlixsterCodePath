@@ -11,6 +11,7 @@ import androidx.core.widget.ContentLoadingProgressBar
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.model.Headers
 import org.json.JSONArray
 
 // --------------------------------//
@@ -31,7 +32,7 @@ class LatestMoviesFragment  : Fragment(), OnListFragmentInteractionListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_latest_moive_list, container, false)
+        val view = inflater.inflate(R.layout.fragment_latest_moives_list, container, false)
         val progressBar = view.findViewById<View>(R.id.progress) as ContentLoadingProgressBar
         val recyclerView = view.findViewById<View>(R.id.list) as RecyclerView
         val context = view.context
@@ -57,65 +58,67 @@ class LatestMoviesFragment  : Fragment(), OnListFragmentInteractionListener {
         params["limit"] = "5"
         params["page"] = "1"
         client["https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed",
-        client["https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed",
+        client[
+                "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed",
                 params,
                 object : JsonHttpResponseHandler()
-                    object : TextHttpResponseHandler()
+//                object : TextHttpResponseHandler()
 
-        {
-            override fun onSuccess(
-                statusCode: Int,
-                headers: Headers,
-                json: JsonHttpResponseHandler.JSON
-            ) {
-                // The wait for a response is over
-                progressBar.hide()
+                {
+                    override fun onSuccess(
+                        statusCode: Int,
+                        headers: Headers,
+                        json: JsonHttpResponseHandler.JSON,
+                    ) {
+                        // The wait for a response is over
+                        progressBar.hide()
 
-                //TODO - Parse JSON into Models
-                Log.d("LatestMovieFragment", "response successful")
-                val resultsJSON : JSONArray = json.jsonObject.get ("results") as JSONArray
+                        //TODO - Parse JSON into Models
+                        Log.d("LatestMovieFragment", "response successful")
+                        val resultsJSON: JSONArray = json.jsonObject.get("results") as JSONArray
 
-                val moviesRawJson : String = resultsJson.toString()
+                        val moviesRawJson: String = resultsJson.toString()
 
-                val gson = Gson()
-                val arrayMovieType = object: TypeToken<List<latestMovie>>( {}.type)
+                        val gson = Gson()
+                        val arrayMovieType = object : TypeToken<List<latestMovie>>({}.type)
 
-                Log.d("LatestMoviesFragment", resultsJson.toString())
+                        Log.d("LatestMoviesFragment", resultsJson.toString())
 
-                val models : List<BestSellerBook> = null // Fix me!
-                recyclerView.adapter = BestSellerBooksRecyclerViewAdapter(models, this@BestSellerBooksFragment)
+                        val models: List<BestSellerBook> = null // Fix me!
+                        recyclerView.adapter =
+                            BestSellerBooksRecyclerViewAdapter(models, this@BestSellerBooksFragment)
 
-                // Look for this in Logcat:
-                Log.d("BestSellerBooksFragment", "response successful")
-            }
+                        // Look for this in Logcat:
+                        Log.d("BestSellerBooksFragment", "response successful")
+                    }
 
-            /*
+                    /*
              * The onFailure function gets called when
              * HTTP response status is "4XX" (eg. 401, 403, 404)
              */
-            override fun onFailure(
-                statusCode: Int,
-                headers: Headers?,
-                errorResponse: String,
-                t: Throwable?
-            ) {
-                // The wait for a response is over
-                progressBar.hide()
+                    override fun onFailure(
+                        statusCode: Int,
+                        headers: Headers?,
+                        errorResponse: String,
+                        t: Throwable?,
+                    ) {
+                        // The wait for a response is over
+                        progressBar.hide()
 
-                // If the error is not null, log it!
-                t?.message?.let {
-                    Log.e("BestSellerBooksFragment", errorResponse)
+                        // If the error is not null, log it!
+                        t?.message?.let {
+                            Log.e("BestSellerBooksFragment", errorResponse)
+                        }
+                    }
                 }
-            }
-        }]
-        */
 
     }
 
-    /*
-     * What happens when a particular book is clicked.
-     */
-    override fun onItemClick(item: BestSellerBook) {
+    open class JsonHttpResponseHandler {
+
+    }
+
+    override fun onItemClick(item: LatestMovie) {
         Toast.makeText(context, "test: " + item.title, Toast.LENGTH_LONG).show()
     }
 
